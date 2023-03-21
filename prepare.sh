@@ -147,6 +147,7 @@ EOF
 cat << EOF > gradle.properties
 groupId=org.eclipse.edc
 javaVersion=11
+version=$VERSION
 defaultVersion=$VERSION
 annotationProcessorVersion=$VERSION
 edcGradlePluginsVersion=$VERSION
@@ -170,8 +171,8 @@ done
 if [ ! -z "$VERSION" ]
 then
   sed -i "s#defaultVersion=0.0.1-SNAPSHOT#defaultVersion=$VERSION#g" $(find . -name "gradle.properties")
-  sed -i "s#annotationProcessorVersion=0.0.1-SNAPSHOT#annotationProcessorVersion=$VERSION#g" $(find . -name "gradle.properties")
   sed -i "s#metaModelVersion=0.0.1-SNAPSHOT#metaModelVersion=$VERSION#g" $(find . -name "gradle.properties")
+  sed -i "s#annotationProcessorVersion=0.0.1-SNAPSHOT#annotationProcessorVersion=$VERSION#g" $(find . -name "gradle.properties")
 
   sed -i "s#edcGradlePluginsVersion=0.0.1-SNAPSHOT#edcGradlePluginsVersion=$VERSION#g" $(find . -name "gradle.properties")
 
@@ -221,12 +222,6 @@ sed -i "s#rootDir/resources/openapi/yaml/registration-service-api.yaml#rootDir/R
 
 # remove the dependency plugin part in connector
 sed -i '95,101d' Connector/build.gradle.kts
-
-# publish plugin needs to be removed from GradlePublish as it stays in the root
-sed -i '162,173d' GradlePlugins/build.gradle.kts
-sed -i '116,153d' GradlePlugins/build.gradle.kts
-sed -i '36,61d' GradlePlugins/build.gradle.kts
-sed -i '/gradle-nexus.publish-plugin/d' GradlePlugins/build.gradle.kts
 
 # not sure that the next part is needed
 cat << EOF >> Connector/build.gradle.kts

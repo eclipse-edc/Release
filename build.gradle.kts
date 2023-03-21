@@ -74,7 +74,6 @@ allprojects {
             withJavadocJar()
             withSourcesJar()
         }
-
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
