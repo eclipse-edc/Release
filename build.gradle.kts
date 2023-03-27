@@ -18,14 +18,10 @@ plugins {
     signing
     `java-library`
     `version-catalog`
-    id("org.gradle.crypto.checksum") version "1.4.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-    id("com.gradle.plugin-publish") version "1.1.0" apply false
 }
 
-val groupId: String by project
 val version: String by project
-val actualVersion: String = version
+val metaModelVersion: String by project
 val edcScmConnection: String by project
 val edcWebsiteUrl: String by project
 val edcScmUrl: String by project
@@ -33,10 +29,6 @@ val javaVersion: String by project
 val annotationProcessorVersion: String by project
 
 buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
     dependencies {
         val edcGradlePluginsVersion: String by project
         classpath("org.eclipse.edc.edc-build:org.eclipse.edc.edc-build.gradle.plugin:${edcGradlePluginsVersion}")
@@ -45,14 +37,6 @@ buildscript {
 
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
-    apply(plugin = "maven-publish")
-    version = actualVersion
-    group = groupId
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
 
     // for all gradle plugins:
     pluginManager.withPlugin("java-gradle-plugin") {
@@ -78,9 +62,7 @@ allprojects {
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
         versions {
-            projectVersion.set(actualVersion)
-            metaModel.set(actualVersion)
-
+            metaModel.set(metaModelVersion)
         }
         pom {
             projectName.set(project.name)

@@ -34,6 +34,9 @@ dependencyResolutionManagement {
             from("org.eclipse.edc:edc-versions:$VERSION")
             // this is not part of the published EDC Version Catalog, so we'll just "amend" it
             library("dnsOverHttps", "com.squareup.okhttp3", "okhttp-dnsoverhttps").versionRef("okhttp")
+            library("titaniumJsonLd", "com.apicatalog", "titanium-json-ld").version("1.3.1")
+            library("jacksonJsonP", "com.fasterxml.jackson.datatype", "jackson-datatype-jakarta-jsonp").version("jackson")
+            library("jakartaJson", "org.glassfish", "jakarta.json").version("2.0.0")
             version("picocli", "4.6.3")
             version("googleFindBugs", "3.0.2")
             version("openApiTools", "0.2.1")
@@ -145,10 +148,9 @@ EOF
 
 # create gradle.properties file for the release
 cat << EOF > gradle.properties
-groupId=org.eclipse.edc
-javaVersion=11
+group=org.eclipse.edc
 version=$VERSION
-defaultVersion=$VERSION
+javaVersion=11
 annotationProcessorVersion=$VERSION
 edcGradlePluginsVersion=$VERSION
 metaModelVersion=$VERSION
@@ -170,18 +172,10 @@ done
 # if the version variable is set, set it in the various gradle.properties and settings.gradle.kts files, otherwise leave 0.0.1-SNAPSHOT
 if [ ! -z "$VERSION" ]
 then
-  sed -i "s#defaultVersion=0.0.1-SNAPSHOT#defaultVersion=$VERSION#g" $(find . -name "gradle.properties")
-  sed -i "s#metaModelVersion=0.0.1-SNAPSHOT#metaModelVersion=$VERSION#g" $(find . -name "gradle.properties")
-  sed -i "s#annotationProcessorVersion=0.0.1-SNAPSHOT#annotationProcessorVersion=$VERSION#g" $(find . -name "gradle.properties")
-
-  sed -i "s#edcGradlePluginsVersion=0.0.1-SNAPSHOT#edcGradlePluginsVersion=$VERSION#g" $(find . -name "gradle.properties")
-
+  sed -i "s#0.0.1-SNAPSHOT#$VERSION#g" $(find . -name "gradle.properties")
   sed -i "s#0.0.1-SNAPSHOT#$VERSION#g" $(find . -name "settings.gradle.kts")
   # sets version in GradlePlugins/DefaultDependencyConvention and in ConnectorServiceImpl (there should be a better way)
   sed -i "s#0.0.1-SNAPSHOT#$VERSION#g" $(find . -name "*.java")
-
-  # put version in the gradle.properties files
-  sed -i "$ a version=$VERSION" $(find . -name "gradle.properties")
 fi
 
 # prebuild and publish plugins and modules to local repository, this needed to permit the all-in-one publish later
@@ -193,9 +187,6 @@ fi
 
 for component in "${components[@]}"
 do
-  # add mavenLocal() to the plugin management (this should be already in place)
-  sed -i '/.*gradlePluginPortal()/a mavenLocal()' $component/settings.gradle.kts
-
   # publish artifacts to maven local
   echo "Build and publish to maven local component $component"
   cd "$component"
@@ -216,41 +207,6 @@ do
   rm -rf $component/launcher
   rm -rf $component/launchers
 done
-
-# update the openapi path for registration service rest client generation
-sed -i "s#rootDir/resources/openapi/yaml/registration-service-api.yaml#rootDir/RegistrationService/resources/openapi/yaml/registration-service-api.yaml#g" $(find RegistrationService -name "build.gradle.kts")
-
-# remove the dependency plugin part in connector
-sed -i '95,101d' Connector/build.gradle.kts
-
-# not sure that the next part is needed
-cat << EOF >> Connector/build.gradle.kts
-
-dependencies {
-    implementation(":GradlePlugins")
-}
-EOF
-
-cat << EOF >> IdentityHub/build.gradle.kts
-
-dependencies {
-    implementation(":Connector")
-}
-EOF
-
-cat << EOF >> FederatedCatalog/build.gradle.kts
-
-dependencies {
-    implementation(":IdentityHub")
-}
-EOF
-
-cat << EOF >> RegistrationService/build.gradle.kts
-
-dependencies {
-    implementation(":IdentityHub")
-}
-EOF
 
 # Gradle 8 is required for v8.x of the Shadow Plugin -> replace all occurrences
 grep -rlz "com.github.johnrengelman.shadow" --exclude prepare.sh | xargs sed -i 's/shadow") version "8.*"/shadow") version "7.1.2"/g'
