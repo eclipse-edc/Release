@@ -30,115 +30,23 @@ dependencyResolutionManagement {
         mavenLocal()
     }
     versionCatalogs {
-        create("libs") {
-            from("org.eclipse.edc:edc-versions:$VERSION")
-            // this is not part of the published EDC Version Catalog, so we'll just "amend" it
-            library("dnsOverHttps", "com.squareup.okhttp3", "okhttp-dnsoverhttps").versionRef("okhttp")
-            library("titaniumJsonLd", "com.apicatalog", "titanium-json-ld").version("1.3.1")
-            library("jacksonJsonP", "com.fasterxml.jackson.datatype", "jackson-datatype-jakarta-jsonp").version("jackson")
-            library("jakartaJson", "org.glassfish", "jakarta.json").version("2.0.0")
-            version("picocli", "4.6.3")
-            version("googleFindBugs", "3.0.2")
-            version("openApiTools", "0.2.1")
-            version("swaggerAnnotation", "1.5.22")
-            library("swagger-jaxrs", "io.swagger.core.v3", "swagger-jaxrs2-jakarta").version("2.1.13")
-
-            library("picocli-core", "info.picocli", "picocli").versionRef("picocli")
-            library("picocli-codegen", "info.picocli", "picocli-codegen").versionRef("picocli")
-            library("google-findbugs-jsr305", "com.google.code.findbugs", "jsr305").versionRef("googleFindBugs")
-            library(
-                "openapi-jackson-databind-nullable",
-                "org.openapitools",
-                "jackson-databind-nullable"
-            ).versionRef("openApiTools")
-            library("swagger-annotations", "io.swagger", "swagger-annotations").versionRef("swaggerAnnotation")
-
+        create("root") {
+          from("org.eclipse.edc:edc-versions:$VERSION")
         }
-        create("identityHub") {
-            version("ih", "$VERSION")
-            library("spi-core", "org.eclipse.edc", "identity-hub-spi").versionRef("ih")
-            library("core", "org.eclipse.edc", "identity-hub").versionRef("ih")
-            library("core-api", "org.eclipse.edc", "identity-hub-api").versionRef("ih")
-            library("core-client", "org.eclipse.edc", "identity-hub-client").versionRef("ih")
-            library("core-verifier", "org.eclipse.edc", "identity-hub-credentials-verifier").versionRef("ih")
-
-            library(
-                "ext-verifier-jwt", "org.eclipse.edc", "identity-hub-verifier-jwt"
-            ).versionRef("ih")
-            library(
-                "ext-credentials-jwt", "org.eclipse.edc", "identity-hub-credentials-jwt"
-            ).versionRef("ih")
-
+        create("gradleplugins") {
+          from("org.eclipse.edc:edc-versions:$VERSION")
         }
-        create("edc") {
-            version("edc", "$VERSION")
-            library("util", "org.eclipse.edc", "util").versionRef("edc")
-            library("boot", "org.eclipse.edc", "boot").versionRef("edc")
-
-            // DPF modules
-            library("api-management", "org.eclipse.edc", "management-api").versionRef("edc")
-            library("api-management-config", "org.eclipse.edc", "management-api-configuration").versionRef("edc")
-            library("api-observability", "org.eclipse.edc", "api-observability").versionRef("edc")
-            library("config-filesystem", "org.eclipse.edc", "configuration-filesystem").versionRef("edc")
-            library("core-api", "org.eclipse.edc", "api-core").versionRef("edc")
-            library("core-connector", "org.eclipse.edc", "connector-core").versionRef("edc")
-            library("core-controlPlane", "org.eclipse.edc", "control-plane-core").versionRef("edc")
-            library("core-controlplane", "org.eclipse.edc", "control-plane-core").versionRef("edc")
-            library("core-identity-did", "org.eclipse.edc", "identity-did-core").versionRef("edc")
-            library("core-jersey", "org.eclipse.edc", "jersey-core").versionRef("edc")
-            library("core-jetty", "org.eclipse.edc", "jetty-core").versionRef("edc")
-            library("core-junit", "org.eclipse.edc", "junit").versionRef("edc")
-            library("core-micrometer", "org.eclipse.edc", "micrometer-core").versionRef("edc")
-            library("core-sql", "org.eclipse.edc", "sql-core").versionRef("edc")
-            library("core-stateMachine", "org.eclipse.edc", "state-machine").versionRef("edc")
-            library("dpf-framework", "org.eclipse.edc", "data-plane-framework").versionRef("edc")
-            library("dpf-selector-client", "org.eclipse.edc", "data-plane-selector-client").versionRef("edc")
-            library("dpf-selector-core", "org.eclipse.edc", "data-plane-selector-core").versionRef("edc")
-            library("dpf-selector-spi", "org.eclipse.edc", "data-plane-selector-spi").versionRef("edc")
-            library("dpf-transferclient", "org.eclipse.edc", "data-plane-transfer-client").versionRef("edc")
-            library("ext-azure-cosmos-core", "org.eclipse.edc", "azure-cosmos-core").versionRef("edc")
-            library("ext-azure-test", "org.eclipse.edc", "azure-test").versionRef("edc")
-            library("ext-configuration-filesystem", "org.eclipse.edc", "configuration-filesystem").versionRef("edc")
-            library("ext-http", "org.eclipse.edc", "http").versionRef("edc")
-            library("ext-identity-did-core", "org.eclipse.edc", "identity-did-core").versionRef("edc")
-            library("ext-identity-did-crypto", "org.eclipse.edc", "identity-did-crypto").versionRef("edc")
-            library("ext-identity-did-web", "org.eclipse.edc", "identity-did-web").versionRef("edc")
-            library("ext-jdklogger", "org.eclipse.edc", "monitor-jdk-logger").versionRef("edc")
-            library("ext-micrometer-jersey", "org.eclipse.edc", "jersey-micrometer").versionRef("edc")
-            library("ext-micrometer-jetty", "org.eclipse.edc", "jetty-micrometer").versionRef("edc")
-            library("ext-observability", "org.eclipse.edc", "api-observability").versionRef("edc")
-            library("ext-vault-azure", "org.eclipse.edc", "vault-azure").versionRef("edc")
-            library("ext-vault-filesystem", "org.eclipse.edc", "vault-filesystem").versionRef("edc")
-            library("iam-mock", "org.eclipse.edc", "iam-mock").versionRef("edc")
- //           library("ids", "org.eclipse.edc", "ids").versionRef("edc")
-            library("junit", "org.eclipse.edc", "junit").versionRef("edc")
-            library("spi-aggregate-service", "org.eclipse.edc", "aggregate-service-spi").versionRef("edc")
-            library("spi-catalog", "org.eclipse.edc", "catalog-spi").versionRef("edc")
-            library("spi-core", "org.eclipse.edc", "core-spi").versionRef("edc")
-            library("spi-http", "org.eclipse.edc", "http-spi").versionRef("edc")
-            library("spi-identity-did", "org.eclipse.edc", "identity-did-spi").versionRef("edc")
-            library("spi-ids", "org.eclipse.edc", "ids-spi").versionRef("edc")
-            library("spi-policy-engine", "org.eclipse.edc", "policy-engine-spi").versionRef("edc")
-            library("spi-transaction", "org.eclipse.edc", "transaction-spi").versionRef("edc")
-            library("spi-transaction-datasource", "org.eclipse.edc", "transaction-datasource-spi").versionRef("edc")
-            library("spi-web", "org.eclipse.edc", "web-spi").versionRef("edc")
-
-            bundle(
-                "connector",
-                listOf("boot", "core-connector", "core-jersey", "core-controlplane", "api-observability")
-            )
-
-            bundle(
-                "dpf",
-                listOf(
-                    "dpf-transferclient",
-                    "dpf-selector-client",
-                    "dpf-selector-spi",
-                    "dpf-selector-core",
-                    "dpf-framework"
-                )
-            )
-
+        create("connector") {
+          from("org.eclipse.edc:connector-versions:$VERSION")
+        }
+        create("identityhub") {
+          from("org.eclipse.edc:identity-hub-versions:$VERSION")
+        }
+        create("registrationservice") {
+          from("org.eclipse.edc:registration-service-versions:$VERSION")
+        }
+        create("federatedcatalog") {
+          from("org.eclipse.edc:federated-catalog-versions:$VERSION")
         }
     }
 }
@@ -174,6 +82,7 @@ if [ ! -z "$VERSION" ]
 then
   sed -i "s#0.0.1-SNAPSHOT#$VERSION#g" $(find . -name "gradle.properties")
   sed -i "s#0.0.1-SNAPSHOT#$VERSION#g" $(find . -name "settings.gradle.kts")
+  sed -i "s#0.0.1-SNAPSHOT#$VERSION#g" $(find . -name "libs.versions.toml")
   # sets version in GradlePlugins/DefaultDependencyConvention and in ConnectorServiceImpl (there should be a better way)
   sed -i "s#0.0.1-SNAPSHOT#$VERSION#g" $(find . -name "*.java")
 fi
@@ -187,6 +96,9 @@ fi
 
 for component in "${components[@]}"
 do
+  # we're using gradle 7 in some components because of https://github.com/gradle-nexus/publish-plugin/issues/208
+  sed -i "s#shadow = .*#shadow = { id = \"com.github.johnrengelman.shadow\", version = \"7.1.2\" }#g" ${component}/gradle/libs.versions.toml
+
   # publish artifacts to maven local
   echo "Build and publish to maven local component $component"
   cd "$component"
@@ -196,17 +108,22 @@ done
 
 for component in "${components[@]}"
 do
+  # rename version-catalog module to avoid conflicts
+  mv ${component}/version-catalog ${component}/${component}-version-catalog-1
+  sed -i "s#:version-catalog#:${component}-version-catalog-1#g" ${component}/settings.gradle.kts
+
   # copy all the component modules into the main settings, adding the component name in the front of it
   cat $component/settings.gradle.kts | grep "include(" | grep -v "system-tests" | grep -v "launcher" | grep -v "data-plane-integration-tests" | sed "s/\":/\":$component:/g" >> settings.gradle.kts
 
   # update all the dependency with the new project tree
   sed -i "s#project(\":#project(\":$component:#g" $(find $component -name "build.gradle.kts")
 
+  # update all dependency with the new version catalog prefix
+  versionCatalogName=$(sed --expression 's/\([A-Z]\)/\L\1/g' <<< ${component})
+  sed -i "s#(libs\.#(${versionCatalogName}\.#g" $(find $component -name "build.gradle.kts")
+
   # remove unneeded stuff
   rm -rf $component/system-tests
   rm -rf $component/launcher
   rm -rf $component/launchers
 done
-
-# Gradle 8 is required for v8.x of the Shadow Plugin -> replace all occurrences
-grep -rlz "com.github.johnrengelman.shadow" --exclude prepare.sh | xargs sed -i 's/shadow") version "8.*"/shadow") version "7.1.2"/g'
