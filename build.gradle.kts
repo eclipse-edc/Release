@@ -12,12 +12,15 @@
  *
  */
 
+import java.time.Duration
+
 plugins {
     checkstyle
     `maven-publish`
     signing
     `java-library`
     `version-catalog`
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
 val version: String by project
@@ -97,5 +100,12 @@ allprojects {
     val signingTasks: TaskCollection<Sign> = tasks.withType()
     tasks.withType<PublishToMavenRepository>().configureEach{
         mustRunAfter(signingTasks)
+    }
+}
+
+nexusPublishing {
+    transitionCheckOptions {
+        maxRetries.set(120)
+        delayBetween.set(Duration.ofSeconds(10))
     }
 }
