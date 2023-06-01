@@ -3,7 +3,7 @@
 set -ve
 
 # the components that need to be built
-declare -a components=("GradlePlugins" "Connector" "IdentityHub" "RegistrationService" "FederatedCatalog")
+declare -a components=("GradlePlugins" "Connector" "IdentityHub" "RegistrationService" "FederatedCatalog" "Technology-Azure" "Technology-Aws" "Technology-Gcp")
 
 # create the base settings.gradle.kts file containing the version catalogs
 cat << EOF > settings.gradle.kts
@@ -45,6 +45,15 @@ dependencyResolutionManagement {
         create("federatedcatalog") {
           from("org.eclipse.edc:federated-catalog-versions:$VERSION")
         }
+        create("tech-azure") {
+          from("org.eclipse.edc:technology-azure-versions:$VERSION")
+        }
+        create("tech-aws") {
+          from("org.eclipse.edc:technology-aws-versions:$VERSION")
+        }
+        create("tech-gcp") {
+          from("org.eclipse.edc:technology-gcp-versions:$VERSION")
+        }
     }
 }
 
@@ -74,7 +83,6 @@ do
   git clone "https://github.com/eclipse-edc/$component"
 done
 
-# if the version variable is set, set it in the various gradle.properties and settings.gradle.kts files, otherwise leave 0.0.1-SNAPSHOT
 # if the version variable is set, set it in the various gradle.properties and settings.gradle.kts files, otherwise leave the old version
 if [ -n "$VERSION" ]
 then

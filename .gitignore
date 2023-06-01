@@ -7,6 +7,9 @@ FederatedCatalog/
 GradlePlugins/
 IdentityHub/
 RegistrationService/
+Technology-Azure/
+Technology-Aws/
+Technology-Gcp/
 
 gradle.properties
 settings.gradle.kts
