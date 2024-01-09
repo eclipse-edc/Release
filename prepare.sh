@@ -116,12 +116,6 @@ fi
 
 for component in "${components[@]}"
 do
-  # we're using gradle 7 in some components because of https://github.com/gradle-nexus/publish-plugin/issues/208
-  sed -i "s#shadow = .*#shadow = { id = \"com.github.johnrengelman.shadow\", version = \"7.1.2\" }#g" ${component}/gradle/libs.versions.toml
-
-  # make sure gradle 7.6 is used everywhere
-  grep -rlz "distributionUrl=" ${component} | xargs sed -i "s#gradle-8..*-bin.zip#gradle-7.6-bin.zip#g"
-
   # publish artifacts to maven local
   echo "Build and publish to maven local component $component"
   cd "$component"
