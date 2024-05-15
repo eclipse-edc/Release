@@ -108,7 +108,7 @@ jobs:
           ./scripts/github_action.sh "eclipse-edc" "${{ matrix.test-def.repo }}" "trigger_snapshot.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
 
   Post-To-Discord:
-    needs: [ Release-Components, Determine-Version, Secrets-Presence ]
+    needs: [ Publish-Components, Release-Components, Determine-Version, Secrets-Presence ]
     if: "needs.Secrets-Presence.outputs.HAS_WEBHOOK && always()"
     runs-on: ubuntu-latest
     steps:
