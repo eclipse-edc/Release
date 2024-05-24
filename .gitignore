@@ -7,9 +7,6 @@ FederatedCatalog/
 GradlePlugins/
 IdentityHub/
 RegistrationService/
-Technology-Azure/
-Technology-Aws/
-Technology-Gcp/
 Runtime-Metamodel/
 
 gradle.properties

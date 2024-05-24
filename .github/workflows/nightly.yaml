@@ -62,10 +62,7 @@ jobs:
                     { repo: "gradleplugins",        workflowfile: "test.yaml" },
                     { repo: "connector",            workflowfile: "verify.yaml" },
                     { repo: "identityhub",          workflowfile: "verify.yaml" },
-                    { repo: "federatedcatalog",     workflowfile: "verify.yaml" },
-                    { repo: "technology-azure",     workflowfile: "verify.yaml" },
-                    { repo: "technology-aws",       workflowfile: "verify.yaml" },
-                    { repo: "technology-gcp",       workflowfile: "verify.yaml" } ]
+                    { repo: "federatedcatalog",     workflowfile: "verify.yaml" }]
 
     steps:
       - uses: actions/checkout@v3

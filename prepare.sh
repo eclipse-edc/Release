@@ -12,9 +12,9 @@ toVersionCatalogName () {
 }
 
 # the components that need to be built
-#declare -a components=("Runtime-Metamodel" "GradlePlugins" "Connector" "IdentityHub" "RegistrationService" "FederatedCatalog" "Technology-Azure" "Technology-Aws" "Technology-Gcp")
+#declare -a components=("Runtime-Metamodel" "GradlePlugins" "Connector" "IdentityHub" "RegistrationService" "FederatedCatalog")
 # RegistrationService has been excluded because currently it can't work with the IATP implementation
-declare -a components=("Runtime-Metamodel" "GradlePlugins" "Connector" "IdentityHub" "FederatedCatalog" "Technology-Azure" "Technology-Aws" "Technology-Gcp")
+declare -a components=("Runtime-Metamodel" "GradlePlugins" "Connector" "IdentityHub" "FederatedCatalog")
 
 # create the base settings.gradle.kts file containing the version catalogs
 cat << EOF > settings.gradle.kts
@@ -56,15 +56,6 @@ dependencyResolutionManagement {
         // }
         create("federatedcatalog") {
           from("org.eclipse.edc:federated-catalog-versions:$VERSION")
-        }
-        create("technologyazure") {
-          from("org.eclipse.edc:technology-azure-versions:$VERSION")
-        }
-        create("technologyaws") {
-          from("org.eclipse.edc:technology-aws-versions:$VERSION")
-        }
-        create("technologygcp") {
-          from("org.eclipse.edc:technology-gcp-versions:$VERSION")
         }
         create("runtimemetamodel"){
           from("org.eclipse.edc:runtime-metamodel-versions:$VERSION")

@@ -54,10 +54,7 @@ jobs:
                     { repo: "gradleplugins",        workflowfile: "test.yaml" },
                     { repo: "connector",            workflowfile: "verify.yaml" },
                     { repo: "identityhub",          workflowfile: "verify.yaml" },
-                    { repo: "federatedcatalog",     workflowfile: "verify.yaml" },
-                    { repo: "technology-azure",     workflowfile: "verify.yaml" },
-                    { repo: "technology-aws",       workflowfile: "verify.yaml" },
-                    { repo: "technology-gcp",       workflowfile: "verify.yaml" } ]
+                    { repo: "federatedcatalog",     workflowfile: "verify.yaml" } ]
     steps:
       - uses: actions/checkout@v3
 
@@ -87,10 +84,7 @@ jobs:
                     { repo: "gradleplugins",     workflowfile: "release-all-java.yml",    versionfield: "metamodel_version" },
                     { repo: "connector",         workflowfile: "release-edc.yml",         versionfield: "edc_version" },
                     { repo: "identityhub",       workflowfile: "release-identityhub.yml", versionfield: "ih_version" },
-                    { repo: "federatedcatalog",  workflowfile: "release-fcc.yml",         versionfield: "edc_version" },
-                    { repo: "technology-azure",  workflowfile: "release-tech-az.yml",     versionfield: "edc_version" },
-                    { repo: "technology-aws",    workflowfile: "release-tech-aws.yml",    versionfield: "edc_version" },
-                    { repo: "technology-gcp",    workflowfile: "release-tech-gcp.yml",    versionfield: "edc_version" } ]
+                    { repo: "federatedcatalog",  workflowfile: "release-fcc.yml",         versionfield: "edc_version" }]
     steps:
       - uses: actions/checkout@v3
       - name: "Log version"
