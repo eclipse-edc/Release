@@ -56,7 +56,7 @@ jobs:
                     { repo: "identityhub",          workflowfile: "verify.yaml" },
                     { repo: "federatedcatalog",     workflowfile: "verify.yaml" } ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: "Run test for ${{ matrix.test-def.repo }}"
         run: |
@@ -86,7 +86,7 @@ jobs:
                     { repo: "identityhub",       workflowfile: "release-identityhub.yml", versionfield: "ih_version" },
                     { repo: "federatedcatalog",  workflowfile: "release-fcc.yml",         versionfield: "edc_version" }]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: "Log version"
         run: |
           echo "Will release version ${{ needs.Determine-Version.outputs.VERSION }}"

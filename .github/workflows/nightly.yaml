@@ -65,7 +65,7 @@ jobs:
                     { repo: "federatedcatalog",     workflowfile: "verify.yaml" }]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: "Log version"
         run: |
           echo "Will build version ${{ needs.Determine-Version.outputs.VERSION }}"
