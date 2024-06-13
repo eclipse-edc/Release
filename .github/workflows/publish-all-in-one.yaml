@@ -7,12 +7,22 @@ on:
         type: string
         required: true
         description: "The version that should be released. "
+      branch: 
+        type: string
+        required: false
+        default: "main"
+        description: "The branch which to publish. must exist in all repos!"
   workflow_call:
     inputs:
       version:
         type: string
         required: true
         description: "The version that should be released. "
+      branch: 
+        type: string
+        required: false
+        default: "main"
+        description: "The branch which to publish. must exist in all repos!"
 
 env:
   VERSION: ${{ github.event.inputs.version || inputs.version }}

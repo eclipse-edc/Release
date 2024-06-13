@@ -5,9 +5,14 @@ on:
       version:
         description: Semantic Version string to use for this release
         required: true
+      branch: 
+        description: Source ranch from which the version should be created. If omitted, 'main' is used.
+        required: false
+        default: "main"
 
 env:
   INPUT_VERSION: ${{ github.event.inputs.version || inputs.version }}
+  INPUT_SOURCE_BRANCH: ${{ github.event.inputs.branch || inputs.branch }}
 
 
 concurrency:
@@ -41,6 +46,16 @@ jobs:
         id: get-version
         run: echo "VERSION=${{ env.INPUT_VERSION }}" >> "$GITHUB_OUTPUT"
 
+  Determine-Branch:
+    # this looks to be necessary because some constructs as "with" are not able to get values from env
+    runs-on: ubuntu-latest
+    outputs: 
+      SOURCE_BRANCH: ${{ steps.get-branch.outputs.BRANCH }}
+    steps:
+      - name: "Get branch"
+        id: get-branch
+        run: echo "SOURCE_BRANCH=${{ env.INPUT_SOURCE_BRANCH }}" >> "$GITHUB_OUTPUT"
+
   Run-All-Tests:
     name: "Run tests"
     runs-on: ubuntu-latest
@@ -61,21 +76,23 @@ jobs:
       - name: "Run test for ${{ matrix.test-def.repo }}"
         run: |
           chmod +x ./scripts/github_action.sh
-          ./scripts/github_action.sh "eclipse-edc" "${{ matrix.test-def.repo }}" "${{ matrix.test-def.workflowfile}}" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
+          ./scripts/github_action.sh "eclipse-edc" "${{ matrix.test-def.repo }}" "${{ matrix.test-def.workflowfile}}" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}" "${{ env.INPUT_SOURCE_BRANCH }}"
 
   Publish-Components:
-    needs: [ Determine-Version, Run-All-Tests ]
-    uses: eclipse-edc/Release/.github/workflows/publish-all-in-one.yaml@main
+    needs: [ Determine-Version, Determine-Branch, Run-All-Tests ]
+    uses: ./.github/workflows/publish-all-in-one.yaml
     with:
       version: ${{ needs.Determine-Version.outputs.VERSION }}
+      branch: "${{ needs.Determine-Branch.outputs.SOURCE_BRANCH }}"
     secrets: inherit
 
   Release-Components:
     name: "Release Components"
     runs-on: ubuntu-latest
-    needs: [ Determine-Version, Publish-Components ]
+    needs: [Secrets-Presence, Determine-Version, Determine-Branch, Publish-Components ]
     if: |
-      needs.Secrets-Presence.outputs.HAS_GH_PAT
+      needs.Secrets-Presence.outputs.HAS_GH_PAT && 
+      needs.Determine-Branch.outputs.SOURCE_BRANCH == 'main'
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -103,7 +120,7 @@ jobs:
 
   Post-To-Discord:
     needs: [ Publish-Components, Release-Components, Determine-Version, Secrets-Presence ]
-    if: "needs.Secrets-Presence.outputs.HAS_WEBHOOK && always()"
+    if: needs.Secrets-Presence.outputs.HAS_WEBHOOK && always()
     runs-on: ubuntu-latest
     steps:
       - uses: sarisia/actions-status-discord@v1

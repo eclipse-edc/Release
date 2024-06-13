@@ -6,13 +6,14 @@ WORKFLOW="$3"
 INPUTS="$4"
 USER="$5"
 PWD="$6"
+BRANCH="$7"
 
 if [ "$#" -eq 5 ]; then
   # use cURL with a Personal Access Token
   echo "Using USER as personal access token for the GitHub API"
   PARAMS=(-H "Authorization: Bearer $USER" -H "Accept: application/vnd.github.v3+json")
 
-elif [ "$#" -eq 6 ]; then
+elif [ "$#" -ge 6 ]; then
   # use basic auth with cUrl
   echo "Using USER/PWD authentication for the GitHub API"
   PARAMS=(-u "$USER":"$PWD" -H "Accept: application/vnd.github.v3+json")
@@ -25,17 +26,22 @@ else
   echo "INPUTS    = json representation of the workflow input"
   echo "USER      = the username to use for authentication against the GitHub API, or an API token"
   echo "PWD       = the password of USER. if not specified, USER will be interpreted as token"
+  echo "BRANCH"   = the branch on which to execute the action. Defaults to "main"
   exit 1
 fi
 
 REPO="$OWNER/$REPO_NAME"
 WORKFLOW_PATH="$REPO/actions/workflows/$WORKFLOW"
 
+# run actions on "main" by default
+if [ -z "${BRANCH}" ]; then
+  BRANCH="main"
+fi
 
 if [ -z "${INPUTS}" ]; then
-  TRIGGER_BODY="{\"ref\": \"main\"}"
+  TRIGGER_BODY="{\"ref\": \"${BRANCH}\"}"
 else
-  TRIGGER_BODY="{\"ref\": \"main\", \"inputs\": ${INPUTS}}"
+  TRIGGER_BODY="{\"ref\": \"${BRANCH}\", \"inputs\": ${INPUTS}}"
 fi
 
 echo "$WORKFLOW_PATH :: $(date) :: Trigger the workflow with ${TRIGGER_BODY}"
