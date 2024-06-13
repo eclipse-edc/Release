@@ -2,6 +2,12 @@
 
 set -ve
 
+# if SOURCE_BRANCH is not set, set it to "main"
+if [ -z "${SOURCE_BRANCH}" ]; then
+  echo "SOURCE_BRANCH variable not set, will default to 'main'"
+  SOURCE_BRANCH="main"
+fi
+
 # removes any dash, performs toLower
 toVersionCatalogName () {
   replacement=""
@@ -85,7 +91,7 @@ EOF
 for component in "${components[@]}"
 do
   rm -rf "$component"
-  git clone "https://github.com/eclipse-edc/$component"
+  git clone -b $SOURCE_BRANCH "https://github.com/eclipse-edc/$component"
 done
 
 # if the version variable is set, set it in the various gradle.properties and settings.gradle.kts files, otherwise leave the old version

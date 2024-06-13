@@ -24,8 +24,10 @@ on:
         default: "main"
         description: "The branch which to publish. must exist in all repos!"
 
+# these environment variables will be read by prepare.sh
 env:
   VERSION: ${{ github.event.inputs.version || inputs.version }}
+  SOURCE_BRANCH: ${{ github.event.inputs.branch || inputs.branch }} 
 
 jobs:
   secrets-presence:
