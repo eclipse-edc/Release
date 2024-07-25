@@ -2,23 +2,21 @@ name: Verify
 
 on:
   push:
+    branches:
+      - main
   pull_request:
     paths-ignore:
       - '**.md'
-      - 'docs/**'
-      - 'CODEOWNERS'
-      - 'LICENSE'
 
 jobs:
   Prepare:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: verifies that prepare doesn't throw errors
         run: VERSION=0.0.1-ci-SNAPSHOT ./prepare.sh
       - name: publish to maven local
-        run: ./gradlew -Pskip.signing=true publishToMavenLocal
+        run: |
+          ./gradlew -Pskip.signing=true publishToMavenLocal \
+              -Dorg.gradle.internal.network.retry.max.attempts=5 -Dorg.gradle.internal.network.retry.initial.backOff=5000
