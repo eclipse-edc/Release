@@ -118,7 +118,7 @@ do
   # publish artifacts to maven local
   echo "Build and publish to maven local component $component"
   cd "$component"
-  ./gradlew -Pskip.signing "${versionProp}" publishToMavenLocal
+  ./gradlew -Pskip.signing "${versionProp}" publishToMavenLocal -Dorg.gradle.internal.network.retry.max.attempts=5 -Dorg.gradle.internal.network.retry.initial.backOff=5000
   cd ..
 done
 
