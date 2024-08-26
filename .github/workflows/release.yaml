@@ -33,7 +33,7 @@ jobs:
         run: |
           [ ! -z "${{ secrets.ORG_GITHUB_BOT_USER }}" ] &&
           [ ! -z "${{ secrets.ORG_GITHUB_BOT_TOKEN }}" ] && echo "HAS_GH_PAT=true" >> $GITHUB_OUTPUT
-          [ ! -z "${{ secrets.DISCORD_WEBHOOK_GITHUB }}" ] && echo "HAS_WEBHOOK=true" >> $GITHUB_OUTPUT
+          [ ! -z "${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}" ] && echo "HAS_WEBHOOK=true" >> $GITHUB_OUTPUT
           exit 0
 
   Determine-Version:
@@ -126,7 +126,7 @@ jobs:
       - uses: sarisia/actions-status-discord@v1
         name: "Invoke discord webhook"
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_GITHUB }}
+          webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
           # if the publishing is skipped, that means the preceding test run failed
           status: ${{ needs.Publish-Components.result == 'skipped' && 'Failure' || needs.Publish-Components.result }}
           title: "Nightly Build"
