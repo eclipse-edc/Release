@@ -58,8 +58,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-def: [ { repo: "runtime-metamodel",    workflowfile: "ci.yaml" },
-                    { repo: "gradleplugins",        workflowfile: "test.yaml" },
+        test-def: [ { repo: "runtime-metamodel",    workflowfile: "verify.yaml" },
+                    { repo: "gradleplugins",        workflowfile: "verify.yaml" },
                     { repo: "connector",            workflowfile: "verify.yaml" },
                     { repo: "identityhub",          workflowfile: "verify.yaml" },
                     { repo: "federatedcatalog",     workflowfile: "verify.yaml" }]
