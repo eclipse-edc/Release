@@ -58,10 +58,6 @@ dependencyResolutionManagement {
         create("identityhub") {
           from("org.eclipse.edc:identity-hub-versions:$VERSION")
         }
-        // Commented because RegistrationService has been excluded from the build
-        // create("registrationservice") {
-        //   from("org.eclipse.edc:registration-service-versions:$VERSION")
-        // }
         create("federatedcatalog") {
           from("org.eclipse.edc:federated-catalog-versions:$VERSION")
         }
@@ -99,13 +95,18 @@ done
 # if the version variable is set, set it in the various gradle.properties and settings.gradle.kts files, otherwise leave the old version
 if [ -n "$VERSION" ]
 then
+  # TODO: new release process:
+  # set the project version
+  # ...
+  # set the edc dependency version
+  # ...
+  # the rows until the end of the if branch can be removed then
+
   # read the old version from the Connector's gradle.properties
   oldVersion=$(grep "version" Connector/gradle.properties  | awk -F= '{print $2}')
   sed -i "s#$oldVersion#$VERSION#g" $(find . -name "gradle.properties")
-  sed -i "s#$oldVersion#$VERSION#g" $(find . -name "settings.gradle.kts")
   sed -i "s#$oldVersion#$VERSION#g" $(find . -name "libs.versions.toml")
-  # sets version in GradlePlugins/DefaultDependencyConvention and in ConnectorServiceImpl (there should be a better way)
-  sed -i "s#$oldVersion#$VERSION#g" $(find . -name "*.java")
+  sed -i "s#$oldVersion#$VERSION#g" $(find . -name "settings.gradle.kts")
 fi
 
 # prebuild and publish plugins and modules to local repository, this needed to permit the all-in-one publish later
