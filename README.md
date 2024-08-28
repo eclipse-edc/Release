@@ -1,10 +1,11 @@
 # EDC Release
 
-This gradle project prepares the EDC for a full release
+EDC core repositories release
 
 ## Run
 
-```
-SOURCE_BRANCH=<git_source_branch> # this is optional
-VERSION=<version number> ./prepare.sh
+```shell
+export SOURCE_BRANCH=<git_source_branch>
+export VERSION=<version number>
+./release-setup.sh
 ```

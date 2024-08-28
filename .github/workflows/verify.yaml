@@ -9,13 +9,16 @@ on:
       - '**.md'
 
 jobs:
-  Prepare:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
-      - name: verifies that prepare doesn't throw errors
-        run: VERSION=0.0.1-ci-SNAPSHOT ./prepare.sh
+      - name: verifies that release setup works correctly
+        run: |
+          export VERSION=0.0.1-ci-SNAPSHOT 
+          export SOURCE_BRANCH=main 
+          ./release-setup.sh
       - name: publish to maven local
         run: |
           ./gradlew -Pskip.signing=true publishToMavenLocal \
