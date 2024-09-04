@@ -2,10 +2,16 @@
 
 set -ve
 
-# if SOURCE_BRANCH is not set, set it to "main"
+# release should always happen from a dedicated branch, SOURCE_BRANCH must be set
 if [ -z "${SOURCE_BRANCH}" ]; then
-  echo "SOURCE_BRANCH variable not set, will default to 'main'"
-  SOURCE_BRANCH="main"
+  echo "SOURCE_BRANCH variable not set and it is mandatory."
+  exit 1;
+fi
+
+# VERSION is mandatory
+if [ -z "${VERSION}" ]; then
+  echo "VERSION variable not set and it is mandatory."
+  exit 1;
 fi
 
 echo "Will build version '$VERSION' off of branch '$SOURCE_BRANCH'"
@@ -19,9 +25,7 @@ toVersionCatalogName () {
   echo $lower
 }
 
-# the components that need to be built
-#declare -a components=("Runtime-Metamodel" "GradlePlugins" "Connector" "IdentityHub" "RegistrationService" "FederatedCatalog")
-# RegistrationService has been excluded because currently it can't work with the IATP implementation
+# the core components
 declare -a components=("Runtime-Metamodel" "GradlePlugins" "Connector" "IdentityHub" "FederatedCatalog")
 
 # create the base settings.gradle.kts file containing the version catalogs
@@ -49,6 +53,9 @@ dependencyResolutionManagement {
         mavenLocal()
     }
     versionCatalogs {
+        create("runtimemetamodel"){
+          from("org.eclipse.edc:runtime-metamodel-versions:$VERSION")
+        }
         create("gradleplugins") {
           from("org.eclipse.edc:edc-versions:$VERSION")
         }
@@ -60,9 +67,6 @@ dependencyResolutionManagement {
         }
         create("federatedcatalog") {
           from("org.eclipse.edc:federated-catalog-versions:$VERSION")
-        }
-        create("runtimemetamodel"){
-          from("org.eclipse.edc:runtime-metamodel-versions:$VERSION")
         }
     }
 }
@@ -89,39 +93,32 @@ EOF
 for component in "${components[@]}"
 do
   rm -rf "$component"
-  git clone -b $SOURCE_BRANCH "https://github.com/eclipse-edc/$component"
+  git clone -b "$SOURCE_BRANCH" "https://github.com/eclipse-edc/$component"
 done
 
-# if the version variable is set, set it in the various gradle.properties and settings.gradle.kts files, otherwise leave the old version
-if [ -n "$VERSION" ]
-then
-  # TODO: new release process:
-  # set the project version
-  # ...
-  # set the edc dependency version
-  # ...
-  # the rows until the end of the if branch can be removed then
+# update the project version
+sed -i 's#^version=.*#version='"$VERSION"'#g' $(find . -name "gradle.properties")
 
-  # read the old version from the Connector's gradle.properties
-  oldVersion=$(grep "version" Connector/gradle.properties  | awk -F= '{print $2}')
-  sed -i "s#$oldVersion#$VERSION#g" $(find . -name "gradle.properties")
-  sed -i "s#$oldVersion#$VERSION#g" $(find . -name "libs.versions.toml")
-  sed -i "s#$oldVersion#$VERSION#g" $(find . -name "settings.gradle.kts")
-fi
+# update the eventual core library version in the version catalog
+sed -i 's#^edc\s*=\s*.*#edc = "'"$VERSION"'"#g' $(find . -name "libs.versions.toml")
+
+# update the versions in the DEPENDENCIES files
+sed -i "s#maven/mavencentral/org.eclipse.edc/\(.*\)/\([^,]*\),\(.*\)#maven/mavencentral/org.eclipse.edc/\1/$VERSION,\3#g" $(find . -name "DEPENDENCIES")
+
+# Copy LICENSE and NOTICE.md files to root, to be included in the jar
+cp Connector/LICENSE .
+cp Connector/NOTICE.md .
+
+# create a comprehensive DEPENDENCIES file on root, to be included in the jar
+cat */DEPENDENCIES | sort -u > DEPENDENCIES
 
 # prebuild and publish plugins and modules to local repository, this needed to permit the all-in-one publish later
-versionProp=""
-if [ ! -z "$VERSION" ]
-then
-  versionProp="-Pversion=$VERSION"
-fi
-
 for component in "${components[@]}"
 do
   # publish artifacts to maven local
   echo "Build and publish to maven local component $component"
   cd "$component"
-  ./gradlew -Pskip.signing "${versionProp}" publishToMavenLocal -Dorg.gradle.internal.network.retry.max.attempts=5 -Dorg.gradle.internal.network.retry.initial.backOff=5000
+  ./gradlew -Pskip.signing "-Pversion=$VERSION" publishToMavenLocal -Dorg.gradle.internal.network.retry.max.attempts=5 -Dorg.gradle.internal.network.retry.initial.backOff=5000
   cd ..
 done
 
