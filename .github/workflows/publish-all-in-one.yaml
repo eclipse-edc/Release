@@ -12,6 +12,11 @@ on:
         required: false
         default: "main"
         description: "The branch which to publish. must exist in all repos!"
+      review-dependencies:
+        type: boolean
+        required: false
+        default: false
+        description: "If true, it will trigger IPLab review for restricted dependencies"
   workflow_call:
     inputs:
       version:
@@ -23,6 +28,11 @@ on:
         required: false
         default: "main"
         description: "The branch which to publish. must exist in all repos!"
+      review-dependencies:
+        type: boolean
+        required: false
+        default: false
+        description: "If true, it will trigger IPLab review for restricted dependencies"
 
 # these environment variables will be read by release-setup.sh
 env:
@@ -41,6 +51,12 @@ jobs:
         run: |
           echo "Launch release setup on branch $SOURCE_BRANCH and version $VERSION"
           ./release-setup.sh
+
+      - name: request review for restricted DEPENDENCIES
+        if: ${{ inputs.review-dependencies }}
+        uses: eclipse-edc/.github/.github/actions/request-dependencies-review@main
+        with:
+          gitlab-token: ${{ secrets.GITLAB_API_TOKEN }}
 
       - name: "Display project structure"
         run: ./gradlew projects

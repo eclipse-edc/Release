@@ -76,6 +76,7 @@ jobs:
     uses: eclipse-edc/Release/.github/workflows/publish-all-in-one.yaml@main
     with:
       version: ${{ needs.Determine-Version.outputs.VERSION }}
+      review-dependencies: true
     secrets: inherit
 
   Post-To-Discord:
