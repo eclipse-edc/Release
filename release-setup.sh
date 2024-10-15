@@ -102,9 +102,6 @@ sed -i 's#^version=.*#version='"$VERSION"'#g' $(find . -name "gradle.properties"
 # update the eventual core library version in the version catalog
 sed -i 's#^edc\s*=\s*.*#edc = "'"$VERSION"'"#g' $(find . -name "libs.versions.toml")
 
-# update the versions in the DEPENDENCIES files
-sed -i "s#maven/mavencentral/org.eclipse.edc/\(.*\)/\([^,]*\),\(.*\)#maven/mavencentral/org.eclipse.edc/\1/$VERSION,\3#g" $(find . -name "DEPENDENCIES")
-
 # Copy LICENSE and NOTICE.md files to root, to be included in the jar
 cp Connector/LICENSE .
 cp Connector/NOTICE.md .
