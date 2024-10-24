@@ -38,10 +38,19 @@ jobs:
       branch: ${{ inputs.branch }}
     secrets: inherit
 
+  Wait-Build-Plugin:
+    needs: [ Publish-Components ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: wait until the build plugin pom is available on maven central, because it is mandatory for the "Release-Components" job
+        run: |
+          build-pom=https://repo.maven.apache.org/maven2/org/eclipse/edc/edc-build/org.eclipse.edc.edc-build.gradle.plugin/${{ inputs.version }}/org.eclipse.edc.edc-build.gradle.plugin-${{ inputs.version }}.pom
+          bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${build-pom)" != "200" ]]; do sleep 5; done'
+
   Release-Components:
     name: "Release Components"
     runs-on: ubuntu-latest
-    needs: [ Publish-Components ]
+    needs: [ Wait-Build-Plugin ]
     strategy:
       fail-fast: false
       matrix:
