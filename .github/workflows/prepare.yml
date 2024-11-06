@@ -33,6 +33,7 @@ jobs:
             "${{ inputs.branch }}"
 
   prepare-technology:
+    needs: [ prepare ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
