@@ -44,8 +44,8 @@ jobs:
     steps:
       - name: wait until the build plugin pom is available on maven central, because it is mandatory for the "Release-Components" job
         run: |
-          build-pom=https://repo.maven.apache.org/maven2/org/eclipse/edc/edc-build/org.eclipse.edc.edc-build.gradle.plugin/${{ inputs.version }}/org.eclipse.edc.edc-build.gradle.plugin-${{ inputs.version }}.pom
-          bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${build-pom)" != "200" ]]; do sleep 5; done'
+          export build_pom=https://repo.maven.apache.org/maven2/org/eclipse/edc/edc-build/org.eclipse.edc.edc-build.gradle.plugin/${{ inputs.version }}/org.eclipse.edc.edc-build.gradle.plugin-${{ inputs.version }}.pom
+          bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${build_pom})" != "200" ]]; do sleep 5; done'
 
   Release-Components:
     name: "Release Components"
