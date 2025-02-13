@@ -87,6 +87,8 @@ edcDeveloperEmail=markus.spiekermann@isst.fraunhofer.de
 edcScmConnection=scm:git:git@github.com:eclipse-edc/Connector.git
 edcWebsiteUrl=https://github.com/eclipse-edc/Connector.git
 edcScmUrl=https://github.com/eclipse-edc/Connector.git
+
+org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError
 EOF
 
 # clone all the component repositories
