@@ -38,14 +38,20 @@ jobs:
       branch: ${{ inputs.branch }}
     secrets: inherit
 
-  Wait-Build-Plugin:
+  Wait-Maven-Artifacts:
     needs: [ Publish-Components ]
     runs-on: ubuntu-latest
     steps:
-      - name: wait until the build plugin pom is available on maven central, because it is mandatory for the "Release-Components" job
+      - name: wait until some basic dependencies are available on maven before going on with the release
         run: |
-          export build_pom=https://repo.maven.apache.org/maven2/org/eclipse/edc/edc-build/org.eclipse.edc.edc-build.gradle.plugin/${{ inputs.version }}/org.eclipse.edc.edc-build.gradle.plugin-${{ inputs.version }}.pom
-          bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${build_pom})" != "200" ]]; do sleep 5; done'
+          export pom=https://repo.maven.apache.org/maven2/org/eclipse/edc/edc-build/org.eclipse.edc.edc-build.gradle.plugin/${{ inputs.version }}/org.eclipse.edc.edc-build.gradle.plugin-${{ inputs.version }}.pom
+          bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${pom})" != "200" ]]; do sleep 5; done'
+
+          export pom=https://repo.maven.apache.org/maven2/org/eclipse/edc/runtime-metamodel/${{ inputs.version }}/runtime-metamodel-${{ inputs.version }}.pom
+          bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${pom})" != "200" ]]; do sleep 5; done'
+
+          export pom=https://repo.maven.apache.org/maven2/org/eclipse/edc/boot/${{ inputs.version }}/boot-${{ inputs.version }}.pom
+          bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' ${pom})" != "200" ]]; do sleep 5; done'
 
   Release-Components:
     name: "Release Components"
