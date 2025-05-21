@@ -56,7 +56,7 @@ jobs:
   Release-Components:
     name: "Release Components"
     runs-on: ubuntu-latest
-    needs: [ Wait-Build-Plugin ]
+    needs: [ Wait-Maven-Artifacts ]
     strategy:
       fail-fast: false
       matrix:
