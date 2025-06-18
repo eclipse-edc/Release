@@ -32,7 +32,8 @@ val annotationProcessorVersion: String by project
 
 buildscript {
     dependencies {
-        val edcGradlePluginsVersion: String by project
+        // val edcGradlePluginsVersion: String by project
+        val edcGradlePluginsVersion = "0.14.0-SNAPSHOT" // workaround to make the nightly work, to be changed!
         classpath("org.eclipse.edc.edc-build:org.eclipse.edc.edc-build.gradle.plugin:${edcGradlePluginsVersion}")
     }
 }
