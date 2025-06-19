@@ -1,0 +1,95 @@
+name: Nightly Build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # run at 00:00 UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  Determine-Version:
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+    steps:
+      - name: "Extract version"
+        id: get-version
+        run: |
+          wget -cq https://raw.githubusercontent.com/eclipse-edc/Connector/main/gradle.properties 
+          echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
+
+  Runtime-Metamodel:
+    runs-on: ubuntu-latest
+    needs: [ Determine-Version ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: RuntimeMetamodel ${{ needs.Determine-Version.outputs.VERSION }}
+        run: |
+          chmod +x ./scripts/github_action.sh
+          ./scripts/github_action.sh "eclipse-edc" "runtime-metamodel" "nightly.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
+
+  GradlePlugins:
+    runs-on: ubuntu-latest
+    needs: [ Runtime-Metamodel ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: GradlePlugins ${{ needs.Determine-Version.outputs.VERSION }}
+        run: |
+          chmod +x ./scripts/github_action.sh
+          ./scripts/github_action.sh "eclipse-edc" "gradleplugins" "nightly.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
+
+  Connector:
+    runs-on: ubuntu-latest
+    needs: [ GradlePlugins ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connector ${{ needs.Determine-Version.outputs.VERSION }}
+        run: |
+          chmod +x ./scripts/github_action.sh
+          ./scripts/github_action.sh "eclipse-edc" "connector" "nightly.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
+
+  IdentityHub-FederatedCatalog:
+    runs-on: ubuntu-latest
+    needs: [ Connector ]
+    strategy:
+      fail-fast: false
+      matrix:
+        repository: [ "identityhub", "federatedcatalog" ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connector ${{ needs.Determine-Version.outputs.VERSION }}
+        run: |
+          chmod +x ./scripts/github_action.sh
+          ./scripts/github_action.sh "eclipse-edc" "${{ matrix.repository }}" "nightly.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
+
+  Technology:
+    runs-on: ubuntu-latest
+    needs: [ IdentityHub-FederatedCatalog ]
+    strategy:
+      fail-fast: false
+      matrix:
+        repository: [ "technology-aws", "technology-azure", "technology-gcp", "technology-huaweicloud" ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connector ${{ needs.Determine-Version.outputs.VERSION }}
+        run: |
+          chmod +x ./scripts/github_action.sh
+          ./scripts/github_action.sh "eclipse-edc" "${{ matrix.repository }}" "nightly.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
+
+  Post-To-Discord:
+    needs: [ Determine-Version, Runtime-Metamodel, GradlePlugins, Connector, IdentityHub-FederatedCatalog, Technology ]
+    if: "always()"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        name: "Invoke discord webhook"
+        with:
+          webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
+          status: ${{ needs.Runtime-Metamodel.result && needs.GradlePlugins.result && needs.Connector.result && needs.IdentityHub-FederatedCatalog.result && needs.Technology.result }}
+          title: "Nightly Build"
+          description: "Build and publish ${{ needs.Determine-Version.outputs.VERSION }}"
+          username: GitHub Actions
