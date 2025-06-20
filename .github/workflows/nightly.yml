@@ -61,7 +61,7 @@ jobs:
         repository: [ "identityhub", "federatedcatalog" ]
     steps:
       - uses: actions/checkout@v4
-      - name: Connector ${{ needs.Determine-Version.outputs.VERSION }}
+      - name: ${{ matrix.repository }} ${{ needs.Determine-Version.outputs.VERSION }}
         run: |
           chmod +x ./scripts/github_action.sh
           ./scripts/github_action.sh "eclipse-edc" "${{ matrix.repository }}" "nightly.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
@@ -75,7 +75,7 @@ jobs:
         repository: [ "technology-aws", "technology-azure", "technology-gcp", "technology-huaweicloud" ]
     steps:
       - uses: actions/checkout@v4
-      - name: Connector ${{ needs.Determine-Version.outputs.VERSION }}
+      - name: ${{ matrix.repository }} ${{ needs.Determine-Version.outputs.VERSION }}
         run: |
           chmod +x ./scripts/github_action.sh
           ./scripts/github_action.sh "eclipse-edc" "${{ matrix.repository }}" "nightly.yml" "" "${{ secrets.ORG_GITHUB_BOT_USER }}" "${{ secrets.ORG_GITHUB_BOT_TOKEN }}"
