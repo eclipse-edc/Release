@@ -67,7 +67,7 @@ fi
 
 status=
 echo "$WORKFLOW_PATH :: $(date) :: Waiting for workflow to start"
-while [ "$status" != "in_progress" ]; do
+while [ "$status" != "in_progress" ] && [ "$status" != "completed" ]; do
   sleep 5
   # fetch the latest run triggered by a workflow_dispatch event
   runs=$(curl --fail -sSl "${PARAMS[@]}" -X GET "https://api.github.com/repos/${WORKFLOW_PATH}/runs?event=workflow_dispatch&per_page=1")
@@ -78,7 +78,7 @@ done
 # contains the ID of the latest/most recent run
 RUN_ID=$(echo "$runs" | jq -r '.workflow_runs[0].id')
 
-echo "$WORKFLOW_PATH :: $(date) :: Waiting for run $RUN_ID to complete"
+echo "$WORKFLOW_PATH :: $(date) :: Waiting for run $RUN_ID to   complete"
 while [ "$status" != "completed" ]; do
   json=$(curl --fail -sSl "${PARAMS[@]}" -X GET "https://api.github.com/repos/${REPO}/actions/runs/${RUN_ID}")
   status=$(echo "$json" | jq -r '.status')
