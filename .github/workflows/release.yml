@@ -17,7 +17,7 @@ jobs:
   Runtime-Metamodel:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: RuntimeMetamodel ${{ inputs.branch }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ Runtime-Metamodel ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: GradlePlugins ${{ inputs.branch }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ GradlePlugins ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Connector ${{ inputs.branch }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -51,7 +51,7 @@ jobs:
       matrix:
         repository: [ "identityhub", "federatedcatalog" ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: ${{ matrix.repository }} ${{ inputs.branch }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -65,7 +65,7 @@ jobs:
       matrix:
         repository: [ "technology-aws", "technology-azure", "technology-gcp", "technology-huaweicloud" ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: ${{ matrix.repository }} ${{ inputs.branch }}
         run: |
           chmod +x ./scripts/github_action.sh
