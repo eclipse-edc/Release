@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ Determine-Version ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: RuntimeMetamodel ${{ needs.Determine-Version.outputs.VERSION }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ Runtime-Metamodel ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: GradlePlugins ${{ needs.Determine-Version.outputs.VERSION }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ GradlePlugins ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Connector ${{ needs.Determine-Version.outputs.VERSION }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -60,7 +60,7 @@ jobs:
       matrix:
         repository: [ "identityhub", "federatedcatalog" ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: ${{ matrix.repository }} ${{ needs.Determine-Version.outputs.VERSION }}
         run: |
           chmod +x ./scripts/github_action.sh
@@ -74,7 +74,7 @@ jobs:
       matrix:
         repository: [ "technology-aws", "technology-azure", "technology-gcp", "technology-huaweicloud" ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: ${{ matrix.repository }} ${{ needs.Determine-Version.outputs.VERSION }}
         run: |
           chmod +x ./scripts/github_action.sh
